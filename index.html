@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catering Booking App</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: #667eea;
+            transition: width 0.5s ease, left 0.5s ease;
+        }
+
+        h1:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 300;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        input:focus + label, select:focus + label {
+            transform: translateY(-20px);
+            color: #667eea;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+            transform: scale(1.02);
+        }
+
+        .payment-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .payment-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: all 0.5s;
+        }
+
+        .payment-option:hover::before {
+            left: 100%;
+        }
+
+        .payment-option:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-option.selected {
+            background-color: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.1s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: all 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            background-color: #5a6fd6;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 300;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        #message.show {
+            opacity: 1;
+            transform: translateY(-10px);
+        }
+
+        #message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        #message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .nav-item i {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <h1 class="floating">Catering Booking</h1>
+        <form id="bookingForm">
+            <div class="form-group">
+                <input type="text" id="name" required>
+                <label for="name">Name</label>
+            </div>
+            <div class="form-group">
+                <input type="tel" id="phone" required>
+                <label for="phone">Phone</label>
+            </div>
+            <div class="form-group">
+                <label>Payment Type</label>
+                <div class="payment-options">
+                    <div class="payment-option" data-type="gpay">GPay</div>
+                    <div class="payment-option" data-type="phonepe">PhonePe</div>
+                    <div class="payment-option" data-type="paytm">Paytm</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="text" id="paymentName" required>
+                <label for="paymentName">Payment Name</label>
+            </div>
+            <button type="submit">Book Now</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Bookings</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-utensils"></i>
+            <span>Menu</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('bookingForm');
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            const messageEl = document.getElementById('message');
+            const inputs = document.querySelectorAll('input');
+
+            paymentOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    paymentOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentNode.querySelector('label').style.transform = 'translateY(-20px)';
+                    this.parentNode.querySelector('label').style.color = '#667eea';
+                });
+
+                input.addEventListener('blur', function() {
+                    if (this.value === '') {
+                        this.parentNode.querySelector('label').style.transform = 'translateY(0)';
+                        this.parentNode.querySelector('label').style.color = '#555';
+                    }
+                });
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('name').value;
+                const phone = document.getElementById('phone').value;
+                const paymentType = document.querySelector('.payment-option.selected')?.dataset.type;
+                const paymentName = document.getElementById('paymentName').value;
+
+                if (!name || !phone || !paymentType || !paymentName) {
+                    showMessage('Please fill in all fields and select a payment type.', 'error');
+                    return;
+                }
+
+                // Simulating API call
+                setTimeout(() => {
+                    const passcode = Math.floor(1000 + Math.random() * 9000);
+                    showMessage(`Booking confirmed! Your passcode is ${passcode}. Please save this for cancellation if needed.`, 'success');
+                    form.reset();
+                    paymentOptions.forEach(opt => opt.classList.remove('selected'));
+                    inputs.forEach(input => {
+                        input.parentNode.querySelector('label').style.transform = 'translateY(0)';
+                        input.parentNode.querySelector('label').style.color = '#555';
+                    });
+                }, 1500);
+
+                showMessage('Processing your booking...', 'success');
+            });
+
+            function showMessage(message, type) {
+                messageEl.textContent = message;
+                messageEl.className = `${type} show`;
+                setTimeout(() => {
+                    messageEl.classList.remove('show');
+                }, 5000);
+            }
+
+            // Add floating animation to form groups
+            const formGroups = document.querySelectorAll('.form-group');
+            formGroups.forEach((group, index) => {
+                group.style.animation = `float 3s ease-in-out ${index * 0.2}s infinite`;
+            });
+        });
+    </script>
+</body>
+</html>
